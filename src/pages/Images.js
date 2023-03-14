@@ -9,6 +9,7 @@ const Images = () => {
   const images = useImageStore((state) => state.images)
   const fetchImages = useImageStore((state) => state.fetchImages)
   const loading = useImageStore((state) => state.loading)
+  const error = useImageStore((state) => state.error)
   const token = useTokenStore((state) => state.token)
   useEffect(() => {
 
@@ -32,6 +33,14 @@ const Images = () => {
       </>
     )
   }
+
+  if (error) {
+    return (
+      <>
+        something went wrong
+      </>
+    )
+  }
   const handleToken = () => {
     localStorage.removeItem('token')
   }
@@ -51,24 +60,26 @@ const Images = () => {
         token !== null ? <FileInput /> : ''
       }
 
-      <ImageList sx={{ width: 600, height: 600 }} cols={3} rowHeight={20}>
-        {images.map((item) => {
-          const base64String = Buffer.from(item.img.data.data, 'utf8').toString('base64');
-          return (
-            <Link to={`/image/${item._id}`} key={item._id}>
-              <ImageListItem >
+      {images ? (
+        <ImageList sx={{ width: 600, height: 600 }} cols={3} rowHeight={20}>
+          {images.map((item) => {
+            const base64String = Buffer.from(item.img.data.data, 'utf8').toString('base64');
+            return (
+              <Link to={`/image/${item._id}`} key={item._id}>
+                <ImageListItem >
 
-                <img
-                  src={`data:${item.img.contentType};base64,${base64String}`}
-                  alt={"uploaded"}
-                  loading="lazy"
-                />
+                  <img
+                    src={`data:${item.img.contentType};base64,${base64String}`}
+                    alt={"uploaded"}
+                    loading="lazy"
+                  />
 
-              </ImageListItem>
-            </Link>
-          )
-        })}
-      </ImageList>
+                </ImageListItem>
+              </Link>
+            )
+          })}
+        </ImageList>
+      ) : ''}
     </>
   )
 }
