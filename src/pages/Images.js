@@ -47,12 +47,12 @@ const Images = () => {
     }
 
     setMaxStep(ids.length)
-    console.log(maxStep, ids.length)
+
   }, [fetchImages, images.length, ids, steps, maxStep])
 
   const handleSteps = () => {
     increaseStep(steps)
-    console.log(steps)
+
   }
 
   if (loading) {

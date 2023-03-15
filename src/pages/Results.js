@@ -28,8 +28,7 @@ const Results = () => {
     setSelectedAns(ansArray)
   }, [])
 
-  console.log(selectedAns)
-  console.log(correctAns)
+
 
 
 
