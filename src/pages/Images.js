@@ -24,8 +24,16 @@ const Images = () => {
   useEffect(() => {
     resetSteps()
     resetIdAns()
+
     const localImages = JSON.parse(localStorage.getItem('images'))
     if (localImages && !localImages.state.loading && localImages.state.images.length === images.length) {
+      if (ids.length !== images.length) {
+        const fetch = async () => {
+          await fetchImages()
+
+        }
+        fetch()
+      }
       setId(ids[steps])
 
     } else {
