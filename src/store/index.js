@@ -9,6 +9,7 @@ let imageStore = (set) => ({
   images: {},
   loading: true,
   error: null,
+  ids: [],
   fetchImages: async () => {
     try {
       const { data } = await axiosInstance({
@@ -16,10 +17,15 @@ let imageStore = (set) => ({
         url: '/images'
       })
 
+      const imageId = data.images.map(image => (image._id))
+
+
       set({
         loading: false,
         images: data.images,
-        error: null
+        ids: imageId,
+        error: null,
+
       })
     } catch (err) {
       set({
@@ -34,10 +40,79 @@ let imageStore = (set) => ({
 imageStore = devtools(imageStore)
 imageStore = persist(imageStore, { name: 'images' })
 
-
 export const useImageStore = create(imageStore)
 
+let quizStore = (set) => ({
+  steps: 0,
+  maxStep: 0,
+  idAns: [],
+  increaseStep: (prev) => {
+    set({
+      steps: prev + 1
+    })
+  },
+  resetSteps: () => {
+    set({
+      steps: 0
+    })
+  },
+  setMaxStep: (length) => {
+    set({
+      maxStep: length
+    })
+  },
+  setIdAns: (current) => {
+    set((state) => ({
+      idAns: [...state.idAns, current]
+    }))
+  },
+  resetIdAns: () => {
+    set({
+      idAns: []
+    })
+  }
+})
 
+quizStore = devtools(quizStore)
+quizStore = persist(quizStore, { name: 'quiz' })
+export const useQuizStore = create(quizStore)
+
+let results = (set) => ({
+  allImages: [],
+  loading: true,
+  error: null,
+  correctAns: [],
+
+  fetchAllImages: async (ans) => {
+    try {
+      const { data } = await axiosInstance({
+        method: 'get',
+        url: '/all/images'
+      })
+      let correctArray = []
+      if (data.success) {
+        data.images.map((item) => correctArray.push(item.correctAns))
+      }
+
+
+      set({
+        loading: false,
+        allImages: data.images,
+        correctAns: correctArray,
+        error: null,
+
+      })
+    } catch (err) {
+      set({
+        error: err,
+        loading: false
+      })
+    }
+  }
+})
+
+results = devtools(results)
+export const useResultStore = create(results)
 
 let singleImage = (set) => ({
   image: {},

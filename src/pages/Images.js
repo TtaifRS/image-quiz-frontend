@@ -1,30 +1,51 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ImageList, ImageListItem, Button, Box } from "@mui/material"
 import { Link } from 'react-router-dom'
 import { Buffer } from 'buffer'
-import { useImageStore, useTokenStore } from '../store'
+import { useImageStore, useQuizStore, useTokenStore } from '../store'
 import FileInput from '../sections/FileInput'
 
 const Images = () => {
+  const ids = useImageStore((state) => state.ids)
   const images = useImageStore((state) => state.images)
   const fetchImages = useImageStore((state) => state.fetchImages)
   const loading = useImageStore((state) => state.loading)
   const error = useImageStore((state) => state.error)
   const token = useTokenStore((state) => state.token)
-  useEffect(() => {
+  const steps = useQuizStore((state) => state.steps)
+  const maxStep = useQuizStore((state) => state.maxStep)
+  const increaseStep = useQuizStore((state) => state.increaseStep)
+  const setMaxStep = useQuizStore((state) => state.setMaxStep)
+  const resetSteps = useQuizStore((state) => state.resetSteps)
+  const resetIdAns = useQuizStore((state) => state.resetIdAns)
+  const [id, setId] = useState('')
 
+
+  useEffect(() => {
+    resetSteps()
+    resetIdAns()
     const localImages = JSON.parse(localStorage.getItem('images'))
     if (localImages && !localImages.state.loading && localImages.state.images.length === images.length) {
-      return
+      setId(ids[steps])
+
     } else {
       const fetch = async () => {
         await fetchImages()
-        console.log('fetching')
+
       }
       fetch()
-    }
-  }, [fetchImages, images.length])
+      setId(ids[steps])
 
+    }
+
+    setMaxStep(ids.length)
+    console.log(maxStep, ids.length)
+  }, [fetchImages, images.length, ids, steps, maxStep])
+
+  const handleSteps = () => {
+    increaseStep(steps)
+    console.log(steps)
+  }
 
   if (loading) {
     return (
@@ -80,6 +101,11 @@ const Images = () => {
           })}
         </ImageList>
       ) : ''}
+      <Box>
+        <Link to={`/quiz/${id}`} >
+          <Button onClick={handleSteps}>Start Quiz</Button>
+        </Link>
+      </Box>
     </>
   )
 }
